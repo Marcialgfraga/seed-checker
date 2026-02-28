@@ -49,7 +49,8 @@ export async function POST(request: NextRequest) {
     // 5. Parse based on file type
     if (isPDF) {
       // pdf-parse extracts all text from a PDF
-      const pdfParse = (await import("pdf-parse")).default;
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const pdfParse = require("pdf-parse") as (buf: Buffer) => Promise<{ text: string; numpages: number }>;
       const pdfData = await pdfParse(buffer);
       rawText = pdfData.text;
       slideCount = pdfData.numpages || 1;
@@ -57,7 +58,8 @@ export async function POST(request: NextRequest) {
 
     if (isPPTX) {
       // officeparser extracts text from PowerPoint files
-      const officeparser = await import("officeparser");
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const officeparser = require("officeparser") as { parseOfficeAsync: (buf: Buffer) => Promise<string> };
       rawText = await officeparser.parseOfficeAsync(buffer);
       // Estimate slide count from content breaks (rough heuristic)
       const slideBreaks = rawText.split(/\n{3,}/);
